@@ -40,6 +40,7 @@ cufftHandle gchReverse;
 float* gpfProcessPhase;
 size_t gnProcessPhasePitch;
 
+
 int main()
 {
     cudaError_t cudaStatus;
@@ -73,7 +74,7 @@ int main()
     fprintf(stdout, "\n");
 
     // initialization
-    initialize(1, 1024, 2048, 1024, 2048);
+    initialize(1, 1024, 2048, 1024, 2048);  // int nMode, int nRawLineLength, int nRawNumberLines, int nProcessNumberLines, int nProcessedNumberLines
 
     // read data from binary file
     short* pnParallel;
@@ -97,7 +98,8 @@ int main()
 
     // pause
 //    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    int nNumberReps = 1000;
+    // int nNumberReps = 1000;
+    int nNumberReps = 1; 
 
     //// set up number of threads per block
     int nThreadsPerBlock;
@@ -108,12 +110,14 @@ int main()
 
         // loop through in chunks that can be processed
         int nAline, nNumberLinesInChunk;
-        for (nAline = 0; nAline < gnCalibrationNumberLines; nAline += gnProcessNumberLines) {
+        for (nAline = 0; nAline < gnCalibrationNumberLines; nAline += gnProcessNumberLines) {           
 
             // copy chunk of data for processing
             nNumberLinesInChunk = nAline + gnProcessNumberLines - gnCalibrationNumberLines;
             if (nNumberLinesInChunk <= 0)
                 nNumberLinesInChunk = gnProcessNumberLines;
+            
+            printf("nAline = %d    nNumberLinesInChunk = %d \n", nAline, nNumberLinesInChunk); 
 
             // copy every other line starting at 0
             gpuErrchk(cudaMemcpy2D(gpfProcessCalibration, gnProcessCalibrationPitch, gpfRawCalibration + (nAline + 0) * gnRawLineLength, 2 * gnProcessCalibrationPitch, gnProcessCalibrationPitch, nNumberLinesInChunk >> 1, cudaMemcpyHostToDevice));
@@ -131,6 +135,8 @@ int main()
             //}
 
             // calculate reference
+            chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now();
+                // old version
             d3Threads.x = 128;
             d3Threads.y = 1024 / d3Threads.x;
             d3Threads.z = 1;
@@ -139,6 +145,14 @@ int main()
             d3Blocks.z = 1;
             calculateMean<<<d3Blocks, d3Threads>>>(gpfProcessCalibration, gpfReferenceEven, nNumberLinesInChunk >> 1, gnRawLineLength);
             gpuErrchk(cudaPeekAtLastError());
+            chrono::high_resolution_clock::time_point t2 = chrono::high_resolution_clock::now();             
+            double dTime = std::chrono::duration<double, std::milli>(t2 - t1).count();
+            fprintf(stdout, "Old kernel calculateMean time = %0.5f ms\n", dTime); 
+
+                // JL version 
+            
+            
+            
 
             // subtract reference
             d3Threads.x = 32;

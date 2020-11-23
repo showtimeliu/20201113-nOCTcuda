@@ -24,4 +24,9 @@
       <Filter>Source files</Filter>
     </CudaCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="OCTVerify.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>

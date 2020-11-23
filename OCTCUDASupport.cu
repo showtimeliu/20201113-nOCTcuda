@@ -1,45 +1,42 @@
 #include "OCTCUDAHeader.cuh"
 
-extern "C" {
-    int gnMode;
-    int gnRawLineLength;
-    int gnRawNumberLines;
-    int gnCalibrationNumberLines;
-    int gnProcessNumberLines;
-    int gnProcessedNumberLines;
-    int gnPerpendicular;
-    int gnAllocationStatus;
-    int gnMidLength;
+extern int gnMode;
+extern int gnRawLineLength;
+extern int gnRawNumberLines;
+extern int gnCalibrationNumberLines;
+extern int gnProcessNumberLines;
+extern int gnProcessedNumberLines;
+extern int gnPerpendicular;
+extern int gnAllocationStatus;
+extern int gnMidLength;
 
-    float* gpfRawCalibration;
-    float* gpfProcessCalibration;
-    size_t gnProcessCalibrationPitch;
+extern float* gpfRawCalibration;
+extern float* gpfProcessCalibration;
+extern size_t gnProcessCalibrationPitch;
 
-    // reference
-    float* gpfReferenceEven;
-    float* gpfReferenceOdd;
+// reference
+extern float* gpfReferenceEven;
+extern float* gpfReferenceOdd;
 
-    // fft
-    cufftComplex* gpcProcessDepthProfile;
-    size_t gnProcessDepthProfilePitch;
-    cufftHandle gchForward;
+// fft
+extern cufftComplex* gpcProcessDepthProfile;
+extern size_t gnProcessDepthProfilePitch;
+extern cufftHandle gchForward;
 
-    // calibration mask
-    int gnCalibrationStart;
-    int gnCalibrationStop;
-    int gnCalibrationRound;
-    float* gpfCalibrationMask;
+// calibration mask
+extern int gnCalibrationStart;
+extern int gnCalibrationStop;
+extern int gnCalibrationRound;
+extern float* gpfCalibrationMask;
 
-    // reverse fft
-    cufftComplex* gpcProcessSpectrum;
-    size_t gnProcessSpectrumPitch;
-    cufftHandle gchReverse;
+// reverse fft
+extern cufftComplex* gpcProcessSpectrum;
+extern size_t gnProcessSpectrumPitch;
+extern cufftHandle gchReverse;
 
-    // phase
-    float* gpfProcessPhase;
-    size_t gnProcessPhasePitch;
-
-}
+// phase
+extern float* gpfProcessPhase;
+extern size_t gnProcessPhasePitch;
 
 
 extern "C" {
@@ -277,16 +274,3 @@ extern "C" {
         return -1;
     }   // int sendData
 }   // extern
-
-
-//__global__ void calculateMean(float* pfMatrix, float* pfMean, int nNumberLines, int nLineLength) {
-//    int nPoint = threadIdx.x + blockIdx.x * blockDim.x;
-//    float fSum = 0.0;
-//    int nOffset = nPoint;
-//    for (int nLine = 0; nLine < nNumberLines; nLine ++) {
-//        fSum += pfMatrix[nOffset];
-//        nOffset += nLineLength;
-//    }   // for (int nLine
-//    pfMean[nPoint] = fSum / ((float)nNumberLines);
-//}   // void calculateReference
-
